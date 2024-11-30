@@ -42,19 +42,17 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         try {
-            // Validate incoming request
             $validator = Validator::make($request->all(), [
                 'first_name' => 'required|string|min:3',
                 'last_name' => 'required|string|min:3',
                 'email' => 'required|string|email|min:3|unique:users',
-                'password' => 'required|string|min:8',
+                'password' => 'required|string|min:8|confirmed',
             ]);
 
             if ($validator->fails()) {
                 return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 400);
             }
 
-            // Create new user
             $user = User::create([
                 'first_name' => $request->input('first_name'),
                 'last_name' => $request->input('last_name'),
@@ -62,7 +60,6 @@ class AuthController extends Controller
                 'password' => Hash::make($request->input('password')),
             ]);
 
-            // Generate token for the new user
             $token = $user->createToken('authToken')->plainTextToken;
 
             return response()->json([
@@ -74,6 +71,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'Server error: ' . $e->getMessage()], 500);
         }
     }
+
 
     // Handle Logout
     public function logout(Request $request)

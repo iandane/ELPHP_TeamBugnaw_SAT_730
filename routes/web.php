@@ -14,10 +14,12 @@ Route::post('/api/register', [AuthController::class, 'register']);
 Route::post('/api/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('logout', [AuthController::class, 'logout']);
 
+// GET route to retrieve user data
+Route::middleware('auth:sanctum')->get('/api/user', [AuthController::class, 'getUser']);
+
+
 // Project
 Route::middleware('auth:sanctum')->group(function () {
-    // Create a project
-
     // Get all projects for the authenticated user
     Route::get('/api/projects', [ProjectController::class, 'index']);
 

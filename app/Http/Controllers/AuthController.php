@@ -72,6 +72,16 @@ class AuthController extends Controller
         }
     }
 
+    // UserController.php
+    public function getUser(Request $request)
+    {
+        $user = Auth::user();
+        return response()->json([
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+        ]);
+    }
 
     // Handle Logout
     public function logout(Request $request)

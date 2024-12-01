@@ -32,4 +32,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(Profile::class);
     }
+
+      // Define a one-to-many relationship with Project model
+      public function projects()
+      {
+          return $this->hasMany(Project::class);
+      }
 }

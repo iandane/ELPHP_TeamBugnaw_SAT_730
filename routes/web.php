@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProjectController;
-
+use App\Http\Controllers\UserController;
 
 
 Route::get('/', function () {
@@ -33,4 +33,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Delete a specific project
     Route::delete('/api/projects/{id}', [ProjectController::class, 'destroy']);
+});
+
+// Update a user data
+Route::middleware('auth:sanctum')->group(function () {
+    Route::put('/api/user', [UserController::class, 'update']);
 });

@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
-
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class ProjectController extends Controller
 {
@@ -19,37 +21,69 @@ class ProjectController extends Controller
 
     // Store a new project (Create)
     public function store(Request $request)
-    {
-        // Validate the input data
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'money_goal' => 'required|numeric',
-            'deadline' => 'required|date',
-        ]);
+{
+    // Log incoming request data for debugging
+    Log::info('Request Data:', $request->all());
 
-        // Handle image upload if exists
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('images', 'public');
-        }
+    // Validate the input data
+    try {
+        $validatedData = $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'required|string',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'money_goal' => 'required|numeric',
+        'deadline' => 'required|date',
+    ]);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        Log::error('Validation failed: ' . json_encode($e->errors()));
+        return response()->json(['errors' => $e->errors()], 422);
+    }
 
-        // Create the project and associate it with the logged-in user
-        $project = Project::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'image' => $imagePath,
-            'money_goal' => $request->money_goal,
-            'deadline' => $request->deadline,
-            'user_id' => Auth::id(), // Associate with the logged-in user
-        ]);
+    
+    
+    // Date formatting and saving the project
+    $project = new Project;
+    $project->title = $validatedData['title'];
+    $project->description = $validatedData['description'];
+    $project->money_goal = $validatedData['money_goal'];
+    $project->deadline = Carbon::createFromFormat('d/m/Y', $validatedData['deadline'])->format('Y-m-d');
+    
+    // Log project info before saving
+    Log::info('Saving project', $project->toArray());
 
+    // Handle image upload if exists
+    $imagePath = null;
+    if ($request->hasFile('image') && $request->file('image')->isValid()) {
+        // Store image and log path
+        $imagePath = $request->file('image')->store('images', 'public');
+        Log::info('Image stored at: ' . $imagePath);
+    }
+
+    // Assign the image path and user_id
+    $project->image = $imagePath;
+    $project->user_id = Auth::id(); // Associate with the authenticated user
+
+    // Wrap the saving operation in a transaction
+    DB::beginTransaction();
+    try {
+        $project->save();
+        DB::commit();  // Commit the transaction if save is successful
+        Log::info('Project saved successfully', $project->toArray());
+        
         return response()->json([
             'message' => 'Project created successfully',
             'project' => $project
         ], 201);
+    } catch (\Exception $e) {
+        DB::rollBack(); // Rollback transaction on failure
+        Log::error('Error saving project: ' . $e->getMessage());
+        
+        return response()->json([
+            'message' => 'Error saving project',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 
     // Get all projects of the authenticated user
     public function index()
@@ -84,6 +118,7 @@ class ProjectController extends Controller
 
         $project = Project::where('user_id', Auth::id())->findOrFail($id); // Ensure project belongs to authenticated user
 
+        
         // Handle image upload if exists
         if ($request->hasFile('image')) {
             // If a new image is uploaded, delete the old one
@@ -125,4 +160,14 @@ class ProjectController extends Controller
             'message' => 'Project deleted successfully'
         ]);
     }
+
+    public function formatDateExample()
+{
+    $date = '2/12/2024';  // Example date in D/M/YYYY format
+    $formattedDate = \Carbon\Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
+    
+    // You can then use $formattedDate, for example, for saving to the database or displaying
+    dd($formattedDate); // For debugging, will output '2024-12-02'
+}
+
 }

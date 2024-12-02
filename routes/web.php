@@ -23,7 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Get all projects for the authenticated user
     Route::get('/api/projects', [ProjectController::class, 'index']);
 
-    Route::post('api/projects', [ProjectController::class, 'store']);
+    Route::post('/api/projects', [ProjectController::class, 'store']);
 
     // Get a specific project
     Route::get('/api/projects/{id}', [ProjectController::class, 'show']);

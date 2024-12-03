@@ -5,9 +5,19 @@
         "This file is @generated automatically"
     ],
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+    "content-hash": "3db3d64002bb998828dcd85193d20736",
+=======
+<<<<<<< HEAD
+>>>>>>> malang
     "content-hash": "5675c63517fc079650b0f7849827f4d2",
 =======
     "content-hash": "3db3d64002bb998828dcd85193d20736",
+>>>>>>> malang
+<<<<<<< HEAD
+=======
+>>>>>>> main
 >>>>>>> malang
     "packages": [
         {

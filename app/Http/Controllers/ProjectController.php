@@ -96,23 +96,24 @@ class ProjectController extends Controller
     }
 
     public function getTitleAndImage()
-    {
-        // Get all projects for the authenticated user and only select the title and image fields
-        $projects = Auth::user()->projects->map(function ($project) {
-            $projectData = $project->only(['title', 'image']);
-            
-            // Prepend the base URL to the image path if it exists
-            if ($projectData['image']) {
-                $projectData['image'] = asset('storage/' . $projectData['image']); // Generate the full image URL
-            }
-    
-            return $projectData;
-        });
-    
-        return response()->json([
-            'projects' => $projects
-        ]);
-    }
+	{
+		// Get all projects for the authenticated user and only select the title and image fields
+		$projects = Auth::user()->projects->map(function ($project) {
+			// Only select the relevant fields (id, title, image)
+			$projectData = $project->only(['id', 'title', 'image']);
+			
+			// Prepend the base URL to the image path if it exists
+			if ($projectData['image']) {
+				$projectData['image'] = asset('storage/' . $projectData['image']); // Generate the full image URL
+			}
+
+			return $projectData;
+		});
+
+		return response()->json([
+			'projects' => $projects
+		]);
+	}
     
 
     // Show a specific project
@@ -164,22 +165,52 @@ class ProjectController extends Controller
         ]);
     }
 
-    // Delete a project
     public function destroy($id)
-    {
-        $project = Project::where('user_id', Auth::id())->findOrFail($id); // Ensure project belongs to authenticated user
+{
+    Log::info('Delete request received for project ID: ' . $id);
+    Log::info('Authenticated user ID: ' . Auth::id());
+    
+    DB::beginTransaction();
+    try {
+        $project = Project::where('user_id', Auth::id())->find($id); 
+        if (!$project) {
+            Log::error('Project not found for user: ' . Auth::id() . ' with project ID: ' . $id);
+            return response()->json([
+                'message' => 'Project not found'
+            ], 404);
+        } else {
+            Log::info('Project found: ' . $project->id);
+        }
 
-        // Delete the project image if it exists
         if ($project->image) {
-            Storage::delete('public/' . $project->image);
+            $imagePath = 'public/' . $project->image;
+            if (Storage::exists($imagePath)) {
+                Storage::delete($imagePath);
+                Log::info('Deleted image at: ' . $imagePath);
+            } else {
+                Log::warning('Image not found in storage at: ' . $imagePath);
+            }
         }
 
         $project->delete();
+        DB::commit();
 
         return response()->json([
-            'message' => 'Project deleted successfully'
-        ]);
+            'message' => 'Project and associated image deleted successfully'
+        ], 200);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Error deleting project: ' . $e->getMessage());
+        return response()->json([
+            'message' => 'Error deleting project',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
+
+
+
 
     public function formatDateExample()
 {

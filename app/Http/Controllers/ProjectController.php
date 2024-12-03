@@ -32,7 +32,7 @@ class ProjectController extends Controller
         'description' => 'required|string',
         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         'money_goal' => 'required|numeric',
-        'deadline' => 'required|date',
+        'deadline' => 'required|date_format:d/m/Y',
     ]);
     } catch (\Illuminate\Validation\ValidationException $e) {
         Log::error('Validation failed: ' . json_encode($e->errors()));
@@ -96,24 +96,24 @@ class ProjectController extends Controller
     }
 
     public function getTitleAndImage()
-    {
-        // Get all projects for the authenticated user and only select the title and image fields
-        $projects = Auth::user()->projects->map(function ($project) {
-            $projectData = $project->only(['title', 'image']);
-            
-            // Prepend the base URL to the image path if it exists
-            if ($projectData['image']) {
-                $projectData['image'] = asset('storage/' . $projectData['image']); // Generate the full image URL
-            }
-    
-            return $projectData;
-        });
-    
-        return response()->json([
-            'projects' => $projects
-        ]);
-    }
-    
+	{
+		// Get all projects for the authenticated user and only select the title and image fields
+		$projects = Auth::user()->projects->map(function ($project) {
+			// Only select the relevant fields (id, title, image)
+			$projectData = $project->only(['id', 'title', 'image']);
+			
+			// Prepend the base URL to the image path if it exists
+			if ($projectData['image']) {
+				$projectData['image'] = asset('storage/' . $projectData['image']); // Generate the full image URL
+			}
+
+			return $projectData;
+		});
+
+		return response()->json([
+			'projects' => $projects
+		]);
+	}
 
     // Show a specific project
     public function show($id)
@@ -183,7 +183,7 @@ class ProjectController extends Controller
 
     public function formatDateExample()
 {
-    $date = '2/12/2024';  // Example date in D/M/YYYY format
+    $date = '02/12/2024';  // Example date in D/M/YYYY format
     $formattedDate = \Carbon\Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
     
     // You can then use $formattedDate, for example, for saving to the database or displaying

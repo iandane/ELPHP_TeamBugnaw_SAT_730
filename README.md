@@ -12,6 +12,4 @@ ANDROID REPO LINK: https://github.com/iandane/ELDROID_-TeamBugnaw-_-FRI_7-30-.gi
 
 TEST PLAN LINK:https://docs.google.com/spreadsheets/d/1oQpmp5cJsqdRFwLT5F0P-CkfTKlwo6Wtk112tcSQmug/edit?usp=sharing
 
-
-
-[ELDROID.-.Project.Documents.pdf](https://github.com/user-attachments/files/17998705/ELDROID.-.Project.Documents.pdf)
+DOCUMENTS: [ELDROID.-.Project.Documents.pdf](https://github.com/user-attachments/files/17998705/ELDROID.-.Project.Documents.pdf)

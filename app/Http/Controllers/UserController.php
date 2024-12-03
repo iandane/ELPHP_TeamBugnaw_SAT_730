@@ -1,10 +1,11 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Routing\Controller as BaseController;
 
@@ -17,7 +18,6 @@ class UserController extends BaseController
 
     public function update(Request $request, $token)
     {
-        // Debug statement to check if middleware is applied
         \Log::info('Update method called with token: ' . $token);
 
         $request->validate([
@@ -55,5 +55,21 @@ class UserController extends BaseController
             'message' => 'Profile updated successfully',
             'user' => $user
         ]);
+    }
+
+    public function destroy($id)
+    {
+        // Log the user ID for debugging purposes
+        \Log::info('Destroy method called with user ID: ' . $id);
+
+        $user = User::find($id);
+        if ($user) {
+            $user->delete();
+            \Log::info('User deleted: ' . $id);
+            return response()->json(['message' => 'User deleted successfully'], 200);
+        } else {
+            \Log::error('User not found: ' . $id);
+            return response()->json(['message' => 'User not found'], 404);
+        }
     }
 }

@@ -24,7 +24,6 @@ class AuthController extends Controller
           
             $user = User::find(Auth::id()); 
     
-          
             $token = $user->createToken('authToken')->plainTextToken;
     
             return response()->json([
@@ -36,7 +35,6 @@ class AuthController extends Controller
     
         return response()->json(['message' => 'Invalid credentials'], 401);
     }
-    
 
     // Handle Registration Request
     public function register(Request $request)
@@ -65,7 +63,12 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Registration successful',
                 'token' => $token,
-                'user' => $user
+                'user' => [
+                    'id' => $user->id,
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
+                    'email' => $user->email,
+                ]
             ], 201);
         } catch (Exception $e) {
             return response()->json(['message' => 'Server error: ' . $e->getMessage()], 500);
@@ -74,14 +77,21 @@ class AuthController extends Controller
 
     // UserController.php
     public function getUser(Request $request)
-    {
-        $user = Auth::user();
-        return response()->json([
-            'first_name' => $user->first_name,
-            'last_name' => $user->last_name,
-            'email' => $user->email,
-        ]);
+{
+    $user = Auth::user();
+
+    if (!$user) {
+        return response()->json(['message' => 'Unauthorized'], 401);
     }
+
+    return response()->json([
+        'id' => $user->id,
+        'first_name' => $user->first_name,
+        'last_name' => $user->last_name,
+        'email' => $user->email,
+    ]);
+}
+
 
     // Handle Logout
     public function logout(Request $request)

@@ -25,9 +25,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/api/projects/{id}', [ProjectController::class, 'destroy']);
 });
 
-// Update user data with token
+
 Route::middleware('auth:sanctum')->group(function () {
+    // Update user data with token
     Route::put('/api/user/{token}', [UserController::class, 'update']);
 });
+Route::middleware('auth:sanctum')->delete('/api/user/{id}', [UserController::class, 'destroy']);
 
 

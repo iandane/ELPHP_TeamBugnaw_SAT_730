@@ -13,12 +13,16 @@ Route::post('/api/register', [AuthController::class, 'register']);
 Route::post('/api/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/api/logout', [AuthController::class, 'logout']);
 
+
+
 // GET route to retrieve user data
 Route::middleware('auth:sanctum')->get('/api/user', [AuthController::class, 'getUser']);
 
 // Project routes
 Route::middleware('auth:sanctum')->group(function () {
+    //Get all the projects
     Route::get('/api/projects', [ProjectController::class, 'index']);
+    Route::get('/api/projects/titles-images', [ProjectController::class, 'getTitleAndImage']); // New route
     Route::post('/api/projects', [ProjectController::class, 'store']);
     Route::get('/api/projects/{id}', [ProjectController::class, 'show']);
     Route::put('/api/projects/{id}', [ProjectController::class, 'update']);

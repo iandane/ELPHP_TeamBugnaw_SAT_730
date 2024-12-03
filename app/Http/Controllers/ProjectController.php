@@ -95,6 +95,26 @@ class ProjectController extends Controller
         ]);
     }
 
+    public function getTitleAndImage()
+    {
+        // Get all projects for the authenticated user and only select the title and image fields
+        $projects = Auth::user()->projects->map(function ($project) {
+            $projectData = $project->only(['title', 'image']);
+            
+            // Prepend the base URL to the image path if it exists
+            if ($projectData['image']) {
+                $projectData['image'] = asset('storage/' . $projectData['image']); // Generate the full image URL
+            }
+    
+            return $projectData;
+        });
+    
+        return response()->json([
+            'projects' => $projects
+        ]);
+    }
+    
+
     // Show a specific project
     public function show($id)
     {

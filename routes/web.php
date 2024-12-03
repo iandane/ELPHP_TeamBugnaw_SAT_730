@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ContributionController;
 
 
 
@@ -33,4 +34,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Delete a specific project
     Route::delete('/api/projects/{id}', [ProjectController::class, 'destroy']);
+
+
+Route::middleware('auth:sanctum')->post('/api/contribute', [ContributionController::class, 'store']);
+
 });

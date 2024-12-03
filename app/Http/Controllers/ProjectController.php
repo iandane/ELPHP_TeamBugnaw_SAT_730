@@ -39,8 +39,6 @@ class ProjectController extends Controller
         return response()->json(['errors' => $e->errors()], 422);
     }
 
-    
-    
     // Date formatting and saving the project
     $project = new Project;
     $project->title = $validatedData['title'];
@@ -167,27 +165,55 @@ class ProjectController extends Controller
     // Delete a project
     public function destroy($id)
     {
-        $project = Project::where('user_id', Auth::id())->findOrFail($id); // Ensure project belongs to authenticated user
-
-        // Delete the project image if it exists
-        if ($project->image) {
-            Storage::delete('public/' . $project->image);
+        Log::info('Delete request received for project ID: ' . $id);
+        Log::info('Authenticated user ID: ' . Auth::id());
+        
+        DB::beginTransaction();
+        try {
+            $project = Project::where('user_id', Auth::id())->find($id); 
+            if (!$project) {
+                Log::error('Project not found for user: ' . Auth::id() . ' with project ID: ' . $id);
+                return response()->json([
+                    'message' => 'Project not found'
+                ], 404);
+            } else {
+                Log::info('Project found: ' . $project->id);
+            }
+    
+            if ($project->image) {
+                $imagePath = 'public/' . $project->image;
+                if (Storage::exists($imagePath)) {
+                    Storage::delete($imagePath);
+                    Log::info('Deleted image at: ' . $imagePath);
+                } else {
+                    Log::warning('Image not found in storage at: ' . $imagePath);
+                }
+            }
+    
+            $project->delete();
+            DB::commit();
+    
+            return response()->json([
+                'message' => 'Project and associated image deleted successfully'
+            ], 200);
+    
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error deleting project: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Error deleting project',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $project->delete();
-
-        return response()->json([
-            'message' => 'Project deleted successfully'
-        ]);
     }
 
     public function formatDateExample()
-{
+    {
     $date = '02/12/2024';  // Example date in D/M/YYYY format
     $formattedDate = \Carbon\Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
     
     // You can then use $formattedDate, for example, for saving to the database or displaying
     dd($formattedDate); // For debugging, will output '2024-12-02'
-}
+    }
 
 }

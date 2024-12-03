@@ -10,7 +10,21 @@
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+        "stripe/stripe-php": "^16.3"
+=======
+<<<<<<< HEAD
+>>>>>>> malang
         "nesbot/carbon": "^3.8"
+=======
+        "stripe/stripe-php": "^16.3"
+>>>>>>> malang
+<<<<<<< HEAD
+=======
+>>>>>>> main
+>>>>>>> malang
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

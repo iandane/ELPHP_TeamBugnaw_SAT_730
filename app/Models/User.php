@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Model;
 
 class User extends Authenticatable
 {
@@ -27,15 +28,10 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    // Define a one-to-one relationship with Profile model
-    public function profile()
+   
+    // Define a one-to-many relationship with Project model
+    public function projects()
     {
-        return $this->hasOne(Profile::class);
-    }
-
-      // Define a one-to-many relationship with Project model
-      public function projects()
-      {
           return $this->hasMany(Project::class);
-      }
+    }
 }

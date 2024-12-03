@@ -10,6 +10,8 @@ PHP MEMBERS: Ivan Trapero, Jefferson Paul Valencia
 
 ANDROID REPO LINK: https://github.com/iandane/ELDROID_-TeamBugnaw-_-FRI_7-30-.git
 
-ELPHP REPO LINK: https://github.com/iandane/ELPHP_TeamBugnaw_SAT_730.git
+TEST PLAN LINK:https://docs.google.com/spreadsheets/d/1oQpmp5cJsqdRFwLT5F0P-CkfTKlwo6Wtk112tcSQmug/edit?usp=sharing
 
-DOCS LINK: https://docs.google.com/document/d/1lAO9xMx4hyPdTmLH9JnpbRAkSn9_vhG9SrxONiYu_K4/edit?tab=t.0
+
+
+[ELDROID.-.Project.Documents.pdf](https://github.com/user-attachments/files/17998705/ELDROID.-.Project.Documents.pdf)
